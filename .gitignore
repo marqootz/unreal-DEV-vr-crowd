@@ -1,0 +1,44 @@
+# Visual Studio / Rider
+.vs/
+.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.iml
+
+# UE build output / caches
+MyProject/Binaries/
+MyProject/Build/
+MyProject/DerivedDataCache/
+MyProject/Intermediate/
+MyProject/Saved/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Crash reports
+**/Crashes/
+
+# Cooked content
+MyProject/Cooked/
+
+# CasualPack — kept locally for source meshes, but only Girl_001 is tracked
+# (used for ATL bake). The other 12 characters are 100MB+ each of duplicate textures
+# we don't need committed.
+MyProject/Content/CasualPackV1/Girl_002/
+MyProject/Content/CasualPackV1/Girl_003/
+MyProject/Content/CasualPackV1/Girl_004/
+MyProject/Content/CasualPackV1/Man_001/
+MyProject/Content/CasualPackV1/Man_002/
+MyProject/Content/CasualPackV1/Man_003/
+MyProject/Content/CasualPackV1/Man_004/
+MyProject/Content/CasualPackV1/Kid_001/
+MyProject/Content/CasualPackV1/Kid_002/
+MyProject/Content/CasualPackV1/Kid_003/
+MyProject/Content/CasualPackV1/Kid_004/
+MyProject/Content/CasualPackV1/Old_001/
+MyProject/Content/CasualPackV1/Old_002/
