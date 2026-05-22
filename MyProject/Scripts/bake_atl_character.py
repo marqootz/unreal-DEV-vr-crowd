@@ -111,7 +111,7 @@ def bake_character(
     da.set_editor_property("precision",
         unreal.AnimToTexturePrecision.EIGHT_BITS if precision_bits == 8
         else unreal.AnimToTexturePrecision.SIXTEEN_BITS)
-    da.set_editor_property("num_bone_influences", unreal.AnimToTextureNumBoneInfluences.TWO)
+    da.set_editor_property("num_bone_influences", unreal.AnimToTextureNumBoneInfluences.FOUR)
     da.set_editor_property("sample_rate", sample_rate)
     da.set_editor_property("auto_play", True)
     da.set_editor_property("animation_index", 0)  # walk = 0, idle = 1
@@ -133,8 +133,21 @@ def bake_character(
 
     da.set_editor_property("anim_sequences", [walk_info, idle_info])
 
-    # Note: AnimationToTexture() creates the bone textures inside the data asset's
-    # package directory if the slots are nullptr. We don't pre-create them.
+    # Pre-create texture targets by duplicating the engine sample's textures.
+    # The AnimToTexture bake asserts on null texture slots in some code paths
+    # (see Engine/Plugins/Experimental/AnimToTexture/.../AnimToTextureUtils.h:161).
+    def _ensure_tex(slot_attr: str, tex_name: str, donor_path: str) -> None:
+        full = f"{out_dir}/{tex_name}"
+        if not unreal.EditorAssetLibrary.does_asset_exist(full):
+            unreal.EditorAssetLibrary.duplicate_asset(donor_path, full)
+        da.set_editor_property(slot_attr, unreal.load_asset(full))
+
+    _ensure_tex("bone_position_texture", f"T_{name}_BonePos",
+                "/AnimToTexture/Characters/Mannequin/Textures/BoneAnimation/TX_BonePosition")
+    _ensure_tex("bone_rotation_texture", f"T_{name}_BoneRot",
+                "/AnimToTexture/Characters/Mannequin/Textures/BoneAnimation/TX_BoneRotation")
+    _ensure_tex("bone_weight_texture", f"T_{name}_BoneWeight",
+                "/AnimToTexture/Characters/Mannequin/Textures/BoneAnimation/TX_BoneWeight")
 
     unreal.EditorAssetLibrary.save_loaded_asset(da)
 
