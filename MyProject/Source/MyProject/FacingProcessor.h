@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "MassProcessor.h"
-#include "ActorSyncProcessor.generated.h"
+#include "FacingProcessor.generated.h"
 
 UCLASS()
-class MYPROJECT_API UActorSyncProcessor : public UMassProcessor
+class MYPROJECT_API UFacingProcessor : public UMassProcessor
 {
 	GENERATED_BODY()
 
 public:
-	UActorSyncProcessor();
+	UFacingProcessor();
 
 protected:
 	virtual void ConfigureQueries(const TSharedRef<FMassEntityManager>& EntityManager) override;
