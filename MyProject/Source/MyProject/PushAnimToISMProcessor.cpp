@@ -75,6 +75,10 @@ void UPushAnimToISMProcessor::Execute(FMassEntityManager& EntityManager,
 			UAnimToTextureInstancePlaybackLibrary::GetFrameDataFromDataAsset(
 				Params.DataAsset, Params.WalkAnimIndex, Anims[i].CurrentTime,
 				FrameData, /*TimeOffset=*/0.f, /*PlayRate=*/1.f);
+			// Disable motion blur on the VAT — the engine helper sets PrevFrame=Frame-1
+			// (one anim frame back), which UE interprets as a per-render-frame delta and
+			// smears the verts. For a background crowd we don't need anim motion blur.
+			FrameData.PrevFrame = FrameData.Frame;
 
 			ISMInfo[InfoIdx].AddBatchedCustomData<FAnimToTextureFrameData>(
 				FrameData, LODs[i].LODSignificance, Rep.PrevLODSignificance);
