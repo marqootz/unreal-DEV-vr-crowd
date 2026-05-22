@@ -12,6 +12,7 @@ public class MyProject : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 			"MassEntity", "MassCommon", "MassMovement", "MassNavigation",
 			"MassSpawner", "MassRepresentation", "MassCrowd", "MassActors",
+			"MassLOD",
 			"ZoneGraph", "StateTreeModule", "AnimToTexture"
 		});
 
