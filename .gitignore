@@ -16,6 +16,13 @@ MyProject/DerivedDataCache/
 MyProject/Intermediate/
 MyProject/Saved/
 
+# Plugin build output (e.g. CrowdBaker fork)
+MyProject/Plugins/*/Binaries/
+MyProject/Plugins/*/Intermediate/
+
+# Python cache
+__pycache__/
+
 # OS
 .DS_Store
 Thumbs.db

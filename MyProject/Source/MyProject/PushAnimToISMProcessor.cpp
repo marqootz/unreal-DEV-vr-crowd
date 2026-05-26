@@ -8,8 +8,8 @@
 #include "MassLODFragments.h"
 #include "MassVisualizationComponent.h"
 #include "MassRepresentationTypes.h"
-#include "AnimToTextureInstancePlaybackHelpers.h"
-#include "AnimToTextureDataAsset.h"
+#include "CrowdBakerInstancePlaybackHelpers.h"
+#include "CrowdBakerDataAsset.h"
 
 UPushAnimToISMProcessor::UPushAnimToISMProcessor()
 	: EntityQuery(*this)
@@ -71,16 +71,20 @@ void UPushAnimToISMProcessor::Execute(FMassEntityManager& EntityManager,
 				continue;
 			}
 
-			FAnimToTextureFrameData FrameData;
-			UAnimToTextureInstancePlaybackLibrary::GetFrameDataFromDataAsset(
-				Params.DataAsset, Params.WalkAnimIndex, Anims[i].CurrentTime,
+			const int32 AnimIndex = (Anims[i].WalkBlend > Params.WalkBlendThreshold)
+				? Params.WalkAnimIndex
+				: Params.IdleAnimIndex;
+
+			FCrowdBakerFrameData FrameData;
+			UCrowdBakerInstancePlaybackLibrary::GetFrameDataFromDataAsset(
+				Params.DataAsset, AnimIndex, Anims[i].CurrentTime,
 				FrameData, /*TimeOffset=*/0.f, /*PlayRate=*/1.f);
 			// Disable motion blur on the VAT — the engine helper sets PrevFrame=Frame-1
 			// (one anim frame back), which UE interprets as a per-render-frame delta and
 			// smears the verts. For a background crowd we don't need anim motion blur.
 			FrameData.PrevFrame = FrameData.Frame;
 
-			ISMInfo[InfoIdx].AddBatchedCustomData<FAnimToTextureFrameData>(
+			ISMInfo[InfoIdx].AddBatchedCustomData<FCrowdBakerFrameData>(
 				FrameData, LODs[i].LODSignificance, Rep.PrevLODSignificance);
 		}
 	});

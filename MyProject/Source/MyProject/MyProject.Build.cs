@@ -13,7 +13,8 @@ public class MyProject : ModuleRules
 			"MassEntity", "MassCommon", "MassMovement", "MassNavigation",
 			"MassSpawner", "MassRepresentation", "MassCrowd", "MassActors",
 			"MassLOD",
-			"ZoneGraph", "StateTreeModule", "AnimToTexture"
+			"ZoneGraph", "StateTreeModule", "AnimToTexture",
+			"CrowdBakerRuntime"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

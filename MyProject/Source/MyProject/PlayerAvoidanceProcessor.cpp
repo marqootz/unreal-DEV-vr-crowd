@@ -42,6 +42,10 @@ void UPlayerAvoidanceProcessor::Execute(FMassEntityManager& EntityManager,
 		const TArrayView<FMassVelocityFragment> Velocities =
 			ChunkContext.GetMutableFragmentView<FMassVelocityFragment>();
 
+		// Cap on per-frame velocity change applied by avoidance. Keeps the response gentle
+		// even if multiple targets stack on the same entity.
+		const float MaxImpulseCmPerSec = 150.f;
+
 		const int32 NumEntities = ChunkContext.GetNumEntities();
 		for (int32 i = 0; i < NumEntities; ++i)
 		{
@@ -56,13 +60,22 @@ void UPlayerAvoidanceProcessor::Execute(FMassEntityManager& EntityManager,
 				const float Dist = Delta.Size();
 				if (Dist >= T.Radius || Dist < KINDA_SMALL_NUMBER) continue;
 
-				const float Falloff = 1.f - (Dist / T.Radius);
+				// Squared falloff: smooth but with enough strength at mid-range for visible avoidance.
+				const float NormDist = Dist / T.Radius;
+				const float Inv = 1.f - NormDist;
+				const float Falloff = Inv * Inv;
 				Accel += (Delta / Dist) * (T.Strength * Falloff);
 			}
 
 			if (!Accel.IsNearlyZero())
 			{
-				Velocities[i].Value += Accel * DeltaTime;
+				FVector Impulse = Accel * DeltaTime;
+				const float ImpulseMag = Impulse.Size();
+				if (ImpulseMag > MaxImpulseCmPerSec * DeltaTime)
+				{
+					Impulse *= (MaxImpulseCmPerSec * DeltaTime) / ImpulseMag;
+				}
+				Velocities[i].Value += Impulse;
 			}
 		}
 	});

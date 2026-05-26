@@ -2,6 +2,7 @@
 #include "CrowdAnimFragment.h"
 #include "MassExecutionContext.h"
 #include "MassMovementFragments.h"
+#include "MassCommonFragments.h"
 #include "MassCommonTypes.h"
 
 UCrowdAnimProcessor::UCrowdAnimProcessor()
@@ -17,6 +18,7 @@ void UCrowdAnimProcessor::ConfigureQueries(const TSharedRef<FMassEntityManager>&
 	EntityQuery.AddRequirement<FCrowdAnimFragment>(EMassFragmentAccess::ReadWrite);
 	EntityQuery.AddConstSharedRequirement<FCrowdAnimParams>();
 	EntityQuery.AddRequirement<FMassVelocityFragment>(EMassFragmentAccess::ReadOnly);
+	EntityQuery.AddRequirement<FTransformFragment>(EMassFragmentAccess::ReadWrite);
 }
 
 void UCrowdAnimProcessor::Execute(FMassEntityManager& EntityManager,
@@ -32,10 +34,20 @@ void UCrowdAnimProcessor::Execute(FMassEntityManager& EntityManager,
 		const TConstArrayView<FMassVelocityFragment> Velocities =
 			ChunkContext.GetFragmentView<FMassVelocityFragment>();
 
+		// RenderScale is per-config (const shared), so only touch transforms when it differs from 1.
+		const bool bApplyScale = !FMath::IsNearlyEqual(Params.RenderScale, 1.f);
+		const TArrayView<FTransformFragment> Transforms =
+			ChunkContext.GetMutableFragmentView<FTransformFragment>();
+
 		const int32 NumEntities = ChunkContext.GetNumEntities();
 		for (int32 i = 0; i < NumEntities; ++i)
 		{
 			FCrowdAnimFragment& A = Anims[i];
+
+			if (bApplyScale)
+			{
+				Transforms[i].GetMutableTransform().SetScale3D(FVector(Params.RenderScale));
+			}
 
 			FVector V = Velocities[i].Value;
 			V.Z = 0.f;

@@ -11,4 +11,7 @@ void UWandererTrait::BuildTemplate(FMassEntityTemplateBuildContext& BuildContext
 	FMassEntityManager& EntityManager = UE::Mass::Utils::GetEntityManagerChecked(World);
 	const FConstSharedStruct ParamsFragment = EntityManager.GetOrCreateConstSharedFragment(Params);
 	BuildContext.AddConstSharedFragment(ParamsFragment);
+
+	const FConstSharedStruct SepFragment = EntityManager.GetOrCreateConstSharedFragment(SeparationParams);
+	BuildContext.AddConstSharedFragment(SepFragment);
 }

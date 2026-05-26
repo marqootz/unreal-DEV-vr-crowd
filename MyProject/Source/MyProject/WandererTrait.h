@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "MassEntityTraitBase.h"
 #include "WandererFragment.h"
+#include "CrowdSeparationProcessor.h"
 #include "WandererTrait.generated.h"
 
 UCLASS(meta = (DisplayName = "Wanderer"))
@@ -16,4 +17,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Wander")
 	FWandererParams Params;
+
+	UPROPERTY(EditAnywhere, Category = "Wander")
+	FCrowdSeparationParams SeparationParams;
 };

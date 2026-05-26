@@ -22,19 +22,26 @@ struct FCrowdAnimFragment : public FMassFragment
 	float WalkBlend = 0.f;
 };
 
-class UAnimToTextureDataAsset;
+class UCrowdBakerDataAsset;
 
 USTRUCT()
 struct FCrowdAnimParams : public FMassConstSharedFragment
 {
 	GENERATED_BODY()
 
-	// The ATL bake to read animation timing from. Walk is anim index 0, idle is index 1.
+	// The CrowdBaker bake to read animation timing from. Walk is anim index 0, idle is index 1.
 	UPROPERTY(EditAnywhere, Category = "CrowdAnim")
-	TObjectPtr<UAnimToTextureDataAsset> DataAsset = nullptr;
+	TObjectPtr<UCrowdBakerDataAsset> DataAsset = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "CrowdAnim")
 	int32 WalkAnimIndex = 0;
+
+	UPROPERTY(EditAnywhere, Category = "CrowdAnim")
+	int32 IdleAnimIndex = 1;
+
+	// If WalkBlend > this threshold, the walk anim plays; otherwise the idle anim.
+	UPROPERTY(EditAnywhere, Category = "CrowdAnim", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float WalkBlendThreshold = 0.25f;
 
 	// Below this speed, blend toward idle.
 	UPROPERTY(EditAnywhere, Category = "CrowdAnim")
@@ -48,4 +55,10 @@ struct FCrowdAnimParams : public FMassConstSharedFragment
 	// speed/AnimNominalSpeed to cancel foot sliding.
 	UPROPERTY(EditAnywhere, Category = "CrowdAnim")
 	float AnimNominalSpeedCmPerSec = 150.f;
+
+	// Uniform render scale applied to the ISM instance transform. Mesh origin is at
+	// the feet, so scaling shrinks the character downward onto the ground. Used to make
+	// child characters read as shorter than adults (kids ~0.85). 1.0 = no change.
+	UPROPERTY(EditAnywhere, Category = "CrowdAnim", meta = (ClampMin = "0.1", ClampMax = "2.0"))
+	float RenderScale = 1.f;
 };
