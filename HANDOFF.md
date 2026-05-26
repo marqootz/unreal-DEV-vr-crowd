@@ -126,12 +126,28 @@ engine's **Representation** group then pushes transforms to the ISM; finally
 `PushAnimToISM` runs **after Representation** (game-thread) to write custom data.
 
 ### B3. Content (the VAT material + a baked character)
-1. Copy the master material **`/Game/ATL/M_CrowdBaker_Character`** (a **layered**
-   material using `ML_BoneAnimation`).
-2. Either copy a baked character folder (`/Game/ATL/<Char>/`) or bake your own
-   (§4).
-3. Build a `MassEntityConfigAsset` per character with the traits in §3.
+
+Use UE's **Migrate** (Content Browser → right-click → *Asset Actions → Migrate*) for
+this layer — it walks the dependency graph and copies everything referenced, unlike a
+manual `.uasset` copy. **Migrate moves Content only, not code** — so do B1 + B2 first.
+
+1. **Build the target project first** (B1 + B2 done, compiles cleanly). The migrated
+   assets reference C++ classes (`UCrowdBakerDataAsset`, `UCrowdAnimTrait`,
+   `UWandererTrait`) and the layered material; if those types don't exist yet, the
+   assets load with **null references**.
+2. **Migrate** the master material **`/Game/ATL/M_CrowdBaker_Character`** and a baked
+   character — migrating a `MassEntityConfig_<Char>` (or `/Game/ATL/<Char>/`) auto-pulls
+   the chain: DataAsset → `SM_*` + bone textures → `MI_*_VAT` → `M_CrowdBaker_Character`
+   + `ML_BoneAnimation` + trait defaults. (Or bake your own — §4.)
+3. Confirm/author a `MassEntityConfigAsset` per character with the traits in §3.
 4. Place a `MassSpawner` with your configs; set `count`.
+
+> **Dependency-drag caveat:** the `CrowdBakerDataAsset` references its `skeletal_mesh`
+> (`SKM_<Char>_Mannequin`) **and** the walk/idle anim sequences, so Migrate also hauls
+> the source skeletal mesh, its skeleton, and the (heavy, purchased) CasualPack textures
+> — none of which the *running* VAT crowd needs. Either let it copy and prune after, or
+> accept the bloat. The baked `SM_*`/textures/`MI_*`/material are the only runtime-critical
+> assets.
 
 ---
 
